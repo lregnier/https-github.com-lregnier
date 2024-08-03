@@ -8,18 +8,18 @@ import reactor.core.publisher.Mono;
 @RestController
 public class UserController {
 
-  private final UserService apiService;
+  private final UserRepository userRepository;
 
-  public UserController(final UserService apiService) {
-    this.apiService = apiService;
+  public UserController(final HttpUserRepository apiService) {
+    this.userRepository = apiService;
   }
 
   @GetMapping("/users")
   public Mono<ResponseEntity<String>> getData() {
-    return apiService.findAll()
+    return userRepository.findAll()
         .publishOn(SchedulerConfig.API_SCHEDULER)
         .doOnNext(responseEntity ->
-            System.out.println("Processing API Controller code on thread: " + Thread.currentThread().getName())
+            System.out.println("Processing API Controller code run on thread: " + Thread.currentThread().getName())
         );
   }
 

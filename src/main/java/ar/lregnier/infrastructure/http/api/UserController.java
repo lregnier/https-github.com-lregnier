@@ -1,6 +1,9 @@
-package ar.lregnier;
+package ar.lregnier.infrastructure.http.api;
 
-import org.springframework.http.ResponseEntity;
+import ar.lregnier.SchedulerConfig;
+import ar.lregnier.domain.UserEntity;
+import ar.lregnier.domain.UserRepository;
+import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
@@ -8,15 +11,15 @@ import reactor.core.publisher.Mono;
 @RestController
 public class UserController {
 
-  private final UserService apiService;
+  private final UserRepository userRepository;
 
-  public UserController(final UserService apiService) {
-    this.apiService = apiService;
+  public UserController(final UserRepository userRepository) {
+    this.userRepository = userRepository;
   }
 
   @GetMapping("/users")
-  public Mono<ResponseEntity<String>> getData() {
-    return apiService.findAll()
+  public Mono<List<UserEntity>> getUsers() {
+    return userRepository.findAll()
         .publishOn(SchedulerConfig.API_SCHEDULER)
         .doOnNext(responseEntity ->
             System.out.println("Processing API Controller code on thread: " + Thread.currentThread().getName())

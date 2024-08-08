@@ -1,6 +1,5 @@
 package ar.lregnier.infrastructure.http.client;
 
-import ar.lregnier.domain.UserEntity;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,14 +13,14 @@ public class HttpClient {
 
   @Autowired
   public HttpClient(WebClient.Builder webClientBuilder) {
-    this.webClient = webClientBuilder.baseUrl("https://jsonplaceholder.typicode.com").build();
+    this.webClient = webClientBuilder.build();
   }
 
-  public Mono<List<UserEntity>> getDataFromExternalService() {
+  public <T> Mono<List<T>> getAll(String url, Class<T> clazz) {
     return webClient.get()
-        .uri("/users")
+        .uri(url)
         .retrieve()
-        .bodyToFlux(UserEntity.class)
+        .bodyToFlux(clazz)
         .collectList()
         .doOnNext(responseEntity ->
             System.out.println("Processing HTTP client code on thread: " + Thread.currentThread().getName())
